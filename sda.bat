@@ -1,49 +1,418 @@
-@echo off
-@shift /0
+using Microsoft.Win32;
+using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.IO;
+using System.Net;
+using System.Runtime.InteropServices;
+using System.Security.Policy;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Windows.Forms.DataFormats;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
-REG ADD HKLM\SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName /v ComputerName /t REG_SZ /d PizzaXYZ-%random% /f
-REG ADD HKLM\SYSTEM\CurrentControlSet\Control\ComputerName\ActiveComputerName /v ComputerName /t REG_SZ /d PizzaXYZ-%random% /f
-REG ADD HKLM\SYSTEM\HardwareConfig /v LastConfig /t REG_SZ /d {eac%random%} /f
-REG ADD HKLM\SYSTEM\CurrentControlSet\Control\IDConfigDB\Hardware" "Profiles\0001 /v HwProfileGuid /t REG_SZ /d {PizzaXYZ-%random%-%random%-%random%-%random%} /f
-REG ADD HKLM\SYSTEM\CurrentControlSet\Control\IDConfigDB\Hardware" "Profiles\0001 /v GUID /t REG_SZ /d {PizzaXYZ-%random%-%random%-%random%-%random%} /f
-REG ADD HKLM\SOFTWARE\Microsoft\Windows" "NT\CurrentVersion /v BuildGUID /t REG_SZ /d PizzaXYZ-%random% /f
-REG ADD HKLM\SOFTWARE\Microsoft\Windows" "NT\CurrentVersion /v RegisteredOwner /t REG_SZ /d PizzaXYZ-%random% /f
-REG ADD HKLM\SOFTWARE\Microsoft\Windows" "NT\CurrentVersion /v RegisteredOrganization /t REG_SZ /d PizzaXYZ-%random% /f
-REG ADD HKLM\SOFTWARE\Microsoft\Cryptography /v GUID /t REG_SZ /d PizzaXYZ-%random%-%random%-%random%-%random% /f
-REG ADD HKLM\SOFTWARE\Microsoft\Cryptography /v MachineGuid /t REG_SZ /d PizzaXYZ-%random%-%random%-%random%-%random% /f
-REG ADD HKLM\SOFTWARE\Microsoft\Windows" "NT\CurrentVersion /v ProductId /t REG_SZ /d %random%-%random%-%random%-%random% /f
-REG ADD HKLM\SOFTWARE\Microsoft\Windows" "NT\CurrentVersion /v InstallDate /t REG_SZ /d %random% /f
-REG ADD HKLM\SYSTEM\CurrentControlSet\Control\SystemInformation /v ComputerHardwareId /t REG_SZ /d {%random%-%random%-%random%-%random%} /f
-reg delete "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control" /v SystemStartOptions /f
+namespace SpooferShark
+{
+    public partial class Products : Form
+    {
+        public bool CheckBoxValue { get; set; }
+        private bool _notificationRunning = false;
+        private string _queuedNotification = null;
+        private string _queuedNotification2 = null;
 
-REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography" /v MachineGuid /t REG_SZ /d %random%-%random%-%random%-%random% /f>nul 2>&1
-REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v BuildGUID /t REG_SZ /d %random%-%random%-%random%-%random% /f>nul 2>&1
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Class\{4d36e967-e325-11ce-bfc1-08002be10318}\Configuration\Variables\BusDeviceDesc" /v PropertyGuid /t REG_SZ /d {%random%-%random%-%random%-%random%} /f>nul 2>&1
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\Configuration\Variables\DeviceDesc" /v PropertyGuid /t REG_SZ /d {%random%-%random%-%random%-%random%} /f>nul 2>&1
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\Configuration\Variables\Driver" /v PropertyGuid /t REG_SZ /d {%random%-%random%-%random%-%random%} /f>nul 2>&1W
-REG ADD "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SystemInformation" /v ComputerHardwareId /t REG_SZ /d {%random%-%random%-%random%-%random%} /f>nul 2>&1
-REG ADD "HKLM\Software\Microsoft\Windows NT\CurrentVersion" /v InstallDate /t REG_SZ /d %random% /f
-REG ADD "HKLM\Software\Microsoft\Windows NT\CurrentVersion" /v ProductId /t REG_SZ /d %random% /f
-REG ADD HKLM\SOFTWARE\Microsoft\Cryptography /v GUID /t REG_SZ /d %random%-%random%-%random%-%random% /f
-REG ADD HKLM\SOFTWARE\Microsoft\Windows" "NT\CurrentVersion /v BuildGUID /t REG_SZ /d PizzaXYZ-%random% /f
-REG ADD HKLM\SOFTWARE\Microsoft\Windows" "NT\CurrentVersion /v RegisteredOrganization /t REG_SZ /d FS%random% /f
-REG ADD HKLM\SOFTWARE\Microsoft\Windows" "NT\CurrentVersion /v RegisteredOwner /t REG_SZ /d FS%random% /f
-REG ADD HKLM\SYSTEM\CurrentControlSet\Control\ComputerName\ActiveComputerName /v ComputerName /t REG_SZ /d %random% /f
-REG ADD HKLM\SYSTEM\CurrentControlSet\Control\ComputerName\ComputerName /v ComputerName /t REG_SZ /d %random% /f
-REG ADD HKLM\SYSTEM\CurrentControlSet\Control\IDConfigDB\Hardware" "Profiles\0001 /v GUID /t REG_SZ /d {PizzaXYZ-%random%-%random%-%random%-%random%} /f
-REG ADD HKLM\SYSTEM\CurrentControlSet\Control\IDConfigDB\Hardware" "Profiles\0001 /v HwProfileGuid /t REG_SZ /d {PizzaXYZ-%random%-%random%-%random%-%random%} /f
-REG ADD HKLM\SYSTEM\CurrentControlSet\Control\SystemInformation /v ComputerHardwareId /t REG_SZ /d {toxic-s%random%-%random%-%random%-%random%} /f
-REG ADD HKLM\SYSTEM\HardwareConfig /v LastConfig /t REG_SZ /d {fefefee%random%-%random%-%random%-%random%} /f
-REG ADD HKLM\Software\Microsoft\Windows NT\CurrentVersion /v InstallDate /t REG_SZ /d %random% /f
-REG ADD HKLM\Software\Microsoft\Windows NT\CurrentVersion /v ProductId /t REG_SZ /d %random% /f
-REG ADD HKLM\System\CurrentControlSet\Control\SystemInformation /v ComputerHardwareId /t REG_SZ /d %random% /f
-REG ADD HKLM\System\CurrentControlSet\Control\WMI\Security /v 671a8285-4edb-4cae-99fe-69a15c48c0bc /t REG_SZ /d %random% /f
-REG ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion" "WindowsUpdate /v SusClientId /t REG_SZ /d {PizzaXYZ-%random%-%random%-%random%-%random%} /f
+        [DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
 
-reg delete "HKEY_LOCAL_MACHINE\Hardware\Description\System\CentralProcessor\0" /v ProcessorNameString /f
-reg delete "HKEY_LOCAL_MACHINE\SYSTEM\HardwareConfig" /f
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
-rd /q /s %systemdrive%\$Recycle.Bin
-rd /q /s d:\$Recycle.Bin
-rd /q /s e:\$Recycle.Bin
-rd /q /s f:\$Recycle.Bin
+        private const int WM_NCLBUTTONDOWN = 0xA1;
+        private const int HTCAPTION = 0x2;
+
+        public Products()
+        {
+            this.Visible = false;
+            InitializeComponent();
+            this.Opacity = 0.98;
+            this.FormBorderStyle = FormBorderStyle.None;
+
+            MouseDown += Lateral_MouseDown;
+
+            Notificacao.MouseDown += Lateral_MouseDown;
+            Stats_notfy.MouseDown += Lateral_MouseDown;
+            descri_notfy.MouseDown += Lateral_MouseDown;
+            piroquinha.MouseDown += Lateral_MouseDown;
+
+            Products_text.MouseDown += Lateral_MouseDown;
+            Filhododono.MouseDown += Lateral_MouseDown;
+
+            HardwareCleaner_tex.MouseDown += Lateral_MouseDown;
+            Expiration2.MouseDown += Lateral_MouseDown;
+            Status2.MouseDown += Lateral_MouseDown;
+            Funcionakkk2.MouseDown += Lateral_MouseDown;
+
+
+            Name_Spoofer.MouseDown += Lateral_MouseDown;
+            Expiration.MouseDown += Lateral_MouseDown;
+            Status.MouseDown += Lateral_MouseDown;
+            Funcionakkk.MouseDown += Lateral_MouseDown;
+
+            //homef.MouseDown += Lateral_MouseDown;
+
+            Name_Spoofer.MouseDown += Lateral_MouseDown;
+            HardwareCleaner_tex.MouseDown += Lateral_MouseDown;
+            Product_f_1.MouseDown += Lateral_MouseDown;
+            Product_f_2.MouseDown += Lateral_MouseDown;
+            LogoFivem.MouseDown += Lateral_MouseDown;
+            LogoFivem2.MouseDown += Lateral_MouseDown;
+
+            Logo_load.MouseDown += Lateral_MouseDown;
+            Lateral.MouseDown += Lateral_MouseDown;
+            Fundor.MouseDown += Lateral_MouseDown;
+        }
+
+        private void Lateral_MouseDown(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+            }
+        }
+
+        private async void Products_Load(object sender, EventArgs e)
+        {
+            Notificacao.Location = new Point(606, 3);
+
+
+            if (CheckBoxValue) // pega o valor da aba de login e joga pra ca
+            {
+                Logo_load.BackgroundImage = Properties.Resources.Vector;
+                LoadSpoofer.BackColor = Color.FromArgb(200, 30, 200);
+                LoadCleaner.BackColor = Color.FromArgb(200, 30, 200);
+                piroquinha.BackColor = Color.FromArgb(200, 30, 200);
+
+                Filhododono.Text = "Satzx";
+                await ShowNotificationAsync("Success", "Welcome, lkzinho");
+
+                Filhododono.ForeColor = Color.FromArgb(200, 30, 200);
+                Funcionakkk.ForeColor = Color.FromArgb(200, 30, 200);
+                Funcionakkk2.ForeColor = Color.FromArgb(200, 30, 200);
+            }
+            else
+            {
+                Logo_load.BackgroundImage = Properties.Resources.Logo_Zenix;
+                LoadSpoofer.BackColor = Color.BlueViolet;
+                LoadCleaner.BackColor = Color.BlueViolet;
+                piroquinha.BackColor = Color.BlueViolet;
+
+                Filhododono.Text = "Zenix";
+                await ShowNotificationAsync("Success", "Welcome, makito");
+
+                Filhododono.ForeColor = Color.BlueViolet;
+                Funcionakkk.ForeColor = Color.BlueViolet;
+                Funcionakkk2.ForeColor = Color.BlueViolet;
+            }
+
+            this.BackColor = ColorTranslator.FromHtml("#08090C");
+            SetRoundedRegion(5);
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            foreach (Control control in this.Controls)
+            {
+                if (control is System.Windows.Forms.Label label)
+                {
+                    label.Invalidate();
+                    label.Paint += (s, args) =>
+                    {
+                        args.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+                        args.Graphics.DrawString(label.Text, label.Font, new SolidBrush(label.ForeColor), new PointF(0, 0));
+                    };
+                }
+            }
+        }
+
+        protected override void OnResize(System.EventArgs e)
+        {
+            base.OnResize(e);
+            SetRoundedRegion(5);
+        }
+
+        private Task ShowNotificationAsync(string name, string description)
+        {
+            // codigo da notificaçao (blacks: <3)
+
+            var tcs = new TaskCompletionSource<bool>();
+
+            if (_notificationRunning)
+            {
+                _queuedNotification = name;
+                _queuedNotification2 = description;
+                return Task.CompletedTask;
+            }
+
+            _notificationRunning = true;
+            _queuedNotification = null;
+            _queuedNotification2 = null;
+
+            Point target = new Point(391, 9);
+            int startX = this.ClientSize.Width + 20;
+            Notificacao.Location = new Point(startX, target.Y);
+            Notificacao.Visible = true;
+
+            Stats_notfy.Text = name;
+            descri_notfy.Text = description;
+
+            int fpsInterval = 25;
+            int pauseMs = 1200;
+            int minStep = 1;
+            var timer = new System.Windows.Forms.Timer();
+            bool leaving = false;
+
+            timer.Interval = fpsInterval;
+            timer.Tick += (s, e) =>
+            {
+                Point curr = Notificacao.Location;
+
+                if (!leaving)
+                {
+                    int dx = curr.X - target.X;
+                    int step = Math.Max(minStep, dx / 10);
+                    int newX = curr.X - step;
+                    if (newX <= target.X)
+                    {
+                        Notificacao.Location = new Point(target.X, curr.Y);
+                        leaving = true;
+                        timer.Stop();
+                        var pauseTimer = new System.Windows.Forms.Timer();
+                        pauseTimer.Interval = pauseMs;
+                        pauseTimer.Tick += (ps, pe) =>
+                        {
+                            pauseTimer.Stop();
+                            pauseTimer.Dispose();
+                            timer.Start();
+                        };
+                        pauseTimer.Start();
+                    }
+                    else
+                    {
+                        Notificacao.Location = new Point(newX, curr.Y);
+                    }
+                }
+                else
+                {
+                    int endX = this.ClientSize.Width + Notificacao.Width + 20;
+                    int dx = endX - curr.X;
+                    int fixedSpeed = 30;
+                    int easingDivisor = 8;
+                    int step = Math.Max(minStep, Math.Min(fixedSpeed, dx / easingDivisor));
+                    int newX = curr.X + step;
+                    if (newX >= endX)
+                    {
+                        timer.Stop();
+                        timer.Dispose();
+                        Notificacao.Location = new Point(endX, curr.Y);
+                        Notificacao.Visible = false;
+
+                        _notificationRunning = false;
+
+                        if (!string.IsNullOrEmpty(_queuedNotification))
+                        {
+                            string next = _queuedNotification;
+                            string nextd = _queuedNotification2;
+                            _queuedNotification = null;
+                            _queuedNotification2 = null;
+                            _ = ShowNotificationAsync(next, nextd);
+                        }
+
+                        tcs.SetResult(true);
+                    }
+                    else
+                    {
+                        Notificacao.Location = new Point(newX, curr.Y);
+                    }
+                }
+            };
+
+            timer.Start();
+            return tcs.Task;
+        }
+
+        private void SetRoundedRegion(int radius) // codigo de deixar bordas arredondadas (blacks: <3)
+        {
+            int diameter = radius * 2;
+            GraphicsPath path = new GraphicsPath();
+
+            // Top-left
+            path.AddArc(0, 0, diameter, diameter, 180, 90);
+            // Top-right
+            path.AddArc(this.Width - diameter, 0, diameter, diameter, 270, 90);
+            // Bottom-right
+            path.AddArc(this.Width - diameter, this.Height - diameter, diameter, diameter, 0, 90);
+            // Bottom-left
+            path.AddArc(0, this.Height - diameter, diameter, diameter, 90, 90);
+
+            path.CloseFigure();
+            this.Region = new Region(path);
+        }
+
+        public static void DeleteFilesAndFolders(string path)
+        {
+            // Apaga todos os arquivos e pastas dentro do diretório especificado, exceto a pasta "game-storage"
+            if (Directory.Exists(path))
+            {
+                try
+                {
+                    foreach (var file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+                    {
+                        File.SetAttributes(file, File.GetAttributes(file) & ~FileAttributes.ReadOnly);
+                        File.Delete(file);
+                    }
+
+                    foreach (var directory in Directory.GetDirectories(path))
+                    {
+                        string directoryName = Path.GetFileName(directory);
+                        if (directoryName != "game-storage")
+                        {
+                            Directory.Delete(directory, true);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro ao deletar arquivos ou diretórios: {ex.Message}");
+                    string errorlog = "start cmd.exe /k \"@echo off && color 4 && mode con: cols=30 lines=5 && echo Error deleting files or directories!\"";
+                    var errorlog2 = new ProcessStartInfo("cmd.exe", "/c " + errorlog)
+                    {
+                        CreateNoWindow = false,
+                        UseShellExecute = true
+                    };
+                    Process.Start(errorlog2);
+                }
+            }
+            else
+            {
+                string errorlog = "start cmd.exe /k \"@echo off && color 4 && mode con: cols=30 lines=5 && echo Directory not found!\"";
+                var errorlog2 = new ProcessStartInfo("cmd.exe", "/c " + errorlog)
+                {
+                    CreateNoWindow = false,
+                    UseShellExecute = true
+                };
+                Process.Start(errorlog2);
+            }
+        }
+
+        private async void LoadSpoofer_Click(object sender, EventArgs e)
+        {
+            await ShowNotificationAsync("Warning", "Loading spoofer...");
+            await Task.Delay(500);
+
+
+            // Fecha Steam, FiveM e Epic Games Launcher
+            var psi = new ProcessStartInfo("cmd.exe", "/c taskkill /f /im Steam.exe /t & taskkill /f /im FiveM.exe /t & taskkill /f /im EpicGamesLauncher.exe /t")
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false
+            };
+            Process.Start(psi);
+
+            // Delata os arquivos de logs e dados locais do FiveM e Digital Entitlements
+
+            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string target = System.IO.Path.Combine(localAppData, "DigitalEntitlements");
+            DeleteFilesAndFolders(target);
+
+            string localAppData2 = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string target2 = Path.Combine(localAppData2, "FiveM", "FiveM.app", "logs");
+            DeleteFilesAndFolders(target2);
+
+            string localAppData3 = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string target3 = Path.Combine(localAppData, "FiveM", "FiveM.app", "data");
+            DeleteFilesAndFolders(target3);
+
+            string localAppData4 = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string target4 = Path.Combine(localAppData, "FiveM", "FiveM.app", "crashes");
+            DeleteFilesAndFolders(target4);
+
+            string localAppData5 = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string target5 = Path.GetTempPath();
+            DeleteFilesAndFolders(target4);
+
+            // Esta línea que instalaba Revo Uninstaller ha sido ELIMINADA:
+            // Process.Start(new ProcessStartInfo("https://download.revouninstaller.com/download/RevoUninProSetup.exe") { UseShellExecute = true });
+
+            await Task.Delay(500);
+            await ShowNotificationAsync("Success", "Spoofed!!!");
+        }
+
+        private async void rawexecut(string urlw)
+        {
+            //baixa web e depois salva executa, vc pode usar pra o que quiser (blacks: <3)
+            string url = urlw;
+            string tempPath = Path.Combine(Path.GetTempPath(), "remote_exec.bat");
+
+            try
+            {
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(url, tempPath);
+                }
+
+                if (!File.Exists(tempPath))
+                {
+                    return;
+                }
+
+                var psi = new ProcessStartInfo()
+                {
+                    FileName = "cmd.exe",
+                    Arguments = $"/c call \"{tempPath}\" & del /f /q \"{tempPath}\"",
+                    CreateNoWindow = false,
+                    UseShellExecute = false,
+                    WindowStyle = ProcessWindowStyle.Normal
+                };
+
+                Process.Start(psi);
+            }
+            catch (Exception) { }
+        }
+
+        private async void LoadCleaner_Click(object sender, EventArgs e)
+        {
+            await Task.Delay(500);
+            await ShowNotificationAsync("Success", "Cleaner loading!!!");
+
+            //.bats com uma caralhada de cleaner
+            rawexecut("https://raw.githubusercontent.com/kkchooopp-stack/sfllds/refs/heads/main/sda.bat");
+            rawexecut("https://raw.githubusercontent.com/kkchooopp-stack/sfllds/refs/heads/main/sdf.bat");
+
+            await Task.Delay(500);
+            await ShowNotificationAsync("Success", "Hardware Cleaner!!!");
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            var f2 = new SharkSpoofer();
+            f2.StartPosition = FormStartPosition.Manual;
+            f2.Location = this.Location;
+            f2.Size = this.Size;
+            f2.WindowState = this.WindowState;
+            f2.FormClosed += (s, e) => this.Close();
+            f2.Show();
+        }
+
+        private void Name_Spoofer_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
